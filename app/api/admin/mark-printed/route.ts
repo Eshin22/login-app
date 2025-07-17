@@ -19,6 +19,9 @@ export async function GET() {
     return NextResponse.json(printedPapers, { status: 200 });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ message: "Failed to fetch printed papers" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Failed to fetch printed papers" },
+      { status: 500 }
+    );
   }
 }

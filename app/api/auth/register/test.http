@@ -1,0 +1,179 @@
+### Test Register API Endpoint
+
+# Base URL
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api/auth/register
+
+### 1. POST - Register a new user (valid data)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "securePassword123"
+}
+
+###
+
+### 2. POST - Register another user (Teacher)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "email": "jane.smith@school.edu",
+  "password": "teacherPass456"
+}
+
+###
+
+### 3. POST - Register user (Admin)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Admin User",
+  "email": "admin@system.com",
+  "password": "adminSecure789"
+}
+
+###
+
+### 4. POST - Register user with missing name
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+###
+
+### 5. POST - Register user with missing email
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "password": "password123"
+}
+
+###
+
+### 6. POST - Register user with missing password
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com"
+}
+
+###
+
+### 7. POST - Register user with all fields empty
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "",
+  "password": ""
+}
+
+###
+
+### 8. POST - Register user with duplicate email (should fail)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Duplicate User",
+  "email": "john.doe@example.com",
+  "password": "anotherPassword123"
+}
+
+###
+
+### 9. POST - Register user with invalid email format
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Invalid Email User",
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+###
+
+### 10. POST - Register user with weak password
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Weak Password User",
+  "email": "weak@example.com",
+  "password": "123"
+}
+
+###
+
+### 11. POST - Register user with special characters in name
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "José María O'Connor",
+  "email": "jose.maria@example.com",
+  "password": "specialChars123"
+}
+
+###
+
+### 12. POST - Register user with long password
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Long Password User",
+  "email": "longpass@example.com",
+  "password": "thisIsAVeryLongPasswordWithNumbersAndSymbols123!@#$%^&*()"
+}
+
+###
+
+### 13. POST - Register user with malformed JSON (should fail)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Malformed User",
+  "email": "malformed@example.com",
+  "password": "password123",
+}
+
+###
+
+### Instructions for testing:
+# 1. Start your Next.js development server: npm run dev
+# 2. Make sure MongoDB is running and connected
+# 3. Run tests in order - first test creates a user, 8th test tries to duplicate it
+# 4. Check the response status codes and messages
+# 5. Verify that passwords are properly hashed in the database
+# 6. Confirm that the default role is set to "unassigned"
+
+### Expected Results:
+# Tests 1-3, 11-12: Should return 201 (Created) with success message
+# Tests 4-7: Should return 400 (Bad Request) with "All fields are required"
+# Test 8: Should return 400 (Bad Request) with "User already exists"
+# Tests 9-10: Should return 201 (depends on your validation logic)
+# Test 13: Should return 500 or 400 (JSON parsing error)
+
+### Notes:
+# - The API sets role to "unassigned" by default
+# - Passwords are hashed using bcrypt with salt rounds of 10
+# - Make sure to check your MongoDB to verify users are created correctly
+# - Consider adding email format validation on the backend if needed
