@@ -1,0 +1,100 @@
+### Test Papers API Endpoints
+
+# Base URL
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api/admin/papers
+
+### 1. GET - Fetch all papers
+GET http://localhost:3000/api/admin/papers
+Content-Type: application/json
+
+###
+
+### 2. POST - Create a new paper
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "title": "Mathematics Final Exam",
+  "subject": "Mathematics",
+  "collectionId": "65a1b2c3d4e5f6789012345a"
+}
+
+###
+
+### 3. POST - Create another paper (Physics)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "title": "Physics Mid-term Test",
+  "subject": "Physics",
+  "collectionId": "65a1b2c3d4e5f6789012345b"
+}
+
+###
+
+### 4. POST - Create paper with invalid data (missing fields)
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "title": "Incomplete Paper"
+}
+
+###
+
+### 5. POST - Create paper with empty fields
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "title": "",
+  "subject": "",
+  "collectionId": ""
+}
+
+###
+
+### 6. DELETE - Delete a paper (replace with actual paper ID)
+DELETE {{apiUrl}}
+Content-Type: application/json
+
+{
+  "id": "65a1b2c3d4e5f6789012345c"
+}
+
+###
+
+### 7. DELETE - Delete paper with invalid ID
+DELETE {{apiUrl}}
+Content-Type: application/json
+
+{
+  "id": "invalid-id"
+}
+
+###
+
+### 8. DELETE - Delete paper without ID
+DELETE {{apiUrl}}
+Content-Type: application/json
+
+{
+}
+
+###
+
+### Instructions for testing:
+# 1. Start your Next.js development server: npm run dev
+# 2. Make sure MongoDB is running and connected
+# 3. Replace the collectionId values with actual collection IDs from your database
+# 4. For DELETE requests, use actual paper IDs returned from GET or POST requests
+# 5. Use VS Code REST Client extension or similar tool to run these requests
+
+### Sample Collection IDs to create first (if needed):
+# You might need to create collections first using the collections API
+# POST http://localhost:3000/api/admin/collections
+# {
+#   "name": "Fall 2024 Exams"
+# }
