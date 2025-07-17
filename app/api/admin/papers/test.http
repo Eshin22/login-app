@@ -10,27 +10,51 @@ Content-Type: application/json
 
 ###
 
-### 2. POST - Create a new paper
+### 2. POST - Create a new paper with Google Drive link
 POST {{apiUrl}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=boundary123
 
-{
-  "title": "Mathematics Final Exam",
-  "subject": "Mathematics",
-  "collectionId": "65a1b2c3d4e5f6789012345a"
-}
+--boundary123
+Content-Disposition: form-data; name="title"
+
+Mathematics Final Exam
+--boundary123
+Content-Disposition: form-data; name="subject"
+
+Mathematics
+--boundary123
+Content-Disposition: form-data; name="collectionId"
+
+65a1b2c3d4e5f6789012345a
+--boundary123
+Content-Disposition: form-data; name="driveLink"
+
+https://drive.google.com/file/d/1234567890abcdef/view?usp=sharing
+--boundary123--
 
 ###
 
-### 3. POST - Create another paper (Physics)
+### 3. POST - Create another paper without drive link
 POST {{apiUrl}}
-Content-Type: application/json
+Content-Type: multipart/form-data; boundary=boundary456
 
-{
-  "title": "Physics Mid-term Test",
-  "subject": "Physics",
-  "collectionId": "65a1b2c3d4e5f6789012345b"
-}
+--boundary456
+Content-Disposition: form-data; name="title"
+
+Physics Mid-term Test
+--boundary456
+Content-Disposition: form-data; name="subject"
+
+Physics
+--boundary456
+Content-Disposition: form-data; name="collectionId"
+
+65a1b2c3d4e5f6789012345b
+--boundary456
+Content-Disposition: form-data; name="driveLink"
+
+
+--boundary456--
 
 ###
 
@@ -89,8 +113,21 @@ Content-Type: application/json
 # 1. Start your Next.js development server: npm run dev
 # 2. Make sure MongoDB is running and connected
 # 3. Replace the collectionId values with actual collection IDs from your database
-# 4. For DELETE requests, use actual paper IDs returned from GET or POST requests
-# 5. Use VS Code REST Client extension or similar tool to run these requests
+# 4. For file upload tests, place a test PDF file in your project root and update the path
+# 5. For DELETE requests, use actual paper IDs returned from GET or POST requests
+# 6. Use VS Code REST Client extension or similar tool to run these requests
+
+### IMPORTANT - Google Drive Link Testing:
+# The new API now accepts Google Drive links instead of file uploads
+# Your frontend should send FormData with: title, subject, collectionId, and driveLink
+# The drive link will be stored in the driveLink field
+# Make sure the Google Drive link is shareable (Anyone with the link can view)
+
+### How to get a Google Drive shareable link:
+# 1. Upload your PDF to Google Drive
+# 2. Right-click on the file and select "Get link"
+# 3. Make sure it's set to "Anyone with the link can view"
+# 4. Copy the link and paste it in the form
 
 ### Sample Collection IDs to create first (if needed):
 # You might need to create collections first using the collections API

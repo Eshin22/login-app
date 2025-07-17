@@ -4,6 +4,8 @@ import Paper from "@/models/paper";
 
 export async function GET() {
   await connectMongoDB();
-  const papers = await Paper.find({ status: "printed" }).populate("collection");
+  const papers = await Paper.find({ status: "printed" }).populate(
+    "collectionId"
+  );
   return NextResponse.json(papers);
 }

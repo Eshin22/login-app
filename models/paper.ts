@@ -6,7 +6,7 @@ const paperSchema = new Schema(
     subject: { type: String, required: true },
     collectionId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Collection", // ✅ Reference the Collection model here
+      ref: "Collection",
       required: true,
     },
     status: {
@@ -16,11 +16,17 @@ const paperSchema = new Schema(
     },
     reviewer: { type: String, default: "" },
     comments: { type: String, default: "" },
+    driveLink: { type: String, default: "" }, // ✅ Changed from pdfUrl to driveLink
     reviewedAt: { type: Date },
     printedAt: { type: Date },
   },
   { timestamps: true, suppressReservedKeysWarning: true }
 );
 
-const Papers = models.Papers || model("Papers", paperSchema);
-export default Papers;
+// Clear the cached model to ensure schema updates are applied
+if (models.Paper) {
+  delete models.Paper;
+}
+
+const Paper = model("Paper", paperSchema);
+export default Paper;

@@ -1,29 +1,19 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "teacher" });
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
     setLoading(true);
-
     try {
       const res = await axios.post("/api/auth/register", form);
       setMessage(res.data.message);
-
-      // ✅ Redirect to login page after successful registration
-      if (res.status === 201 || res.status === 200) {
-        setTimeout(() => {
-          router.push("/login");
-        }, 1500); // wait 1.5s to show success message before redirect
-      }
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         setMessage(err.response.data.message);
@@ -42,6 +32,7 @@ export default function Register() {
           Create Account
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name Input */}
           <div>
             <label className="block text-gray-300 mb-1">Name</label>
             <input
@@ -54,6 +45,7 @@ export default function Register() {
             />
           </div>
 
+          {/* Email Input */}
           <div>
             <label className="block text-gray-300 mb-1">Email</label>
             <input
@@ -66,6 +58,7 @@ export default function Register() {
             />
           </div>
 
+          {/* Password Input */}
           <div>
             <label className="block text-gray-300 mb-1">Password</label>
             <input
@@ -78,18 +71,7 @@ export default function Register() {
             />
           </div>
 
-          <div>
-            <label className="block text-gray-300 mb-1">Select Role</label>
-            <select
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full px-4 py-3 bg-gray-700 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="teacher">Teacher</option>
-              <option value="reviewer">Reviewer</option>
-            </select>
-          </div>
-
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}

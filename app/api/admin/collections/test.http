@@ -1,0 +1,27 @@
+### Test Collections API Endpoint
+
+# Base URL
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api/admin/collections
+
+### 1. GET - Fetch all collections
+GET {{apiUrl}}
+Content-Type: application/json
+
+###
+
+### 2. POST - Create a new collection
+POST {{apiUrl}}
+Content-Type: application/json
+
+{
+  "name": "Test Collection 2025"
+}
+
+###
+
+### 3. GET - Fetch collections again to verify creation
+GET {{apiUrl}}
+Content-Type: application/json
+
+###

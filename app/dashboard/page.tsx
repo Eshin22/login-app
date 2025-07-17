@@ -2,7 +2,7 @@
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AdminPanel from "./adminPanel";
+import AdminPanel from "./admin/page";
 import TeacherPanel from "./teacherPanel";
 import ReviewerPanel from "./reviewerPanel";
 

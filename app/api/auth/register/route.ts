@@ -1,32 +1,45 @@
-import { connectMongoDB }  from "@/utils/db";
+import { NextResponse } from "next/server";
+import { connectMongoDB } from "@/utils/db";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-interface RegisterRequestBody {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-}
+export async function POST(req: Request) {
+  try {
+    await connectMongoDB();
+    const { name, email, password } = await req.json();
 
-interface RegisterResponse {
-    message: string;
-    user?: unknown;
-}
-
-export async function POST(req: Request): Promise<Response> {
-    await  connectMongoDB();
-    const { name, email, password, role }: RegisterRequestBody = await req.json();
-
-    const userExist = await User.findOne({ email });
-    if (userExist) {
-        const response: RegisterResponse = { message: "User already exists" };
-        return new Response(JSON.stringify(response), { status: 400 });
+    if (!name || !email || !password) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
     }
 
-    const hashedPassword: string = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashedPassword, role });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "User already exists" },
+        { status: 400 }
+      );
+    }
 
-    const response: RegisterResponse = { message: "User registered", user: newUser };
-    return new Response(JSON.stringify(response), { status: 201 });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      // role will default to "unassigned" as per schema
+    });
+
+    return NextResponse.json(
+      { message: "User registered successfully", user: newUser },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Register error:", error);
+    return NextResponse.json(
+      { message: "Registration failed" },
+      { status: 500 }
+    );
+  }
 }
