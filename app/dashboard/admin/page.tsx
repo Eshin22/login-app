@@ -65,17 +65,6 @@ export default function AdminPage() {
       alert("Please fill in title, subject, and select a collection");
       return;
     }
-
-    if (
-      newPaper.driveLink &&
-      !newPaper.driveLink.includes("drive.google.com")
-    ) {
-      const proceed = confirm(
-        "The link doesn't appear to be a Google Drive link. Proceed anyway?"
-      );
-      if (!proceed) return;
-    }
-
     try {
       const formData = new FormData();
       formData.append("title", newPaper.title);
@@ -90,10 +79,10 @@ export default function AdminPage() {
       setNewPaper({ title: "", subject: "", collectionId: "", driveLink: "" });
       fetchPapers();
     } catch (error: any) {
-      const errorMessage =
+      alert(
         error.response?.data?.message ||
-        "Failed to add paper. Please try again.";
-      alert(errorMessage);
+          "Failed to add paper. Please try again."
+      );
     }
   };
 
@@ -118,16 +107,26 @@ export default function AdminPage() {
             Admin Dashboard
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            Manage collections, upload papers, assign reviewers, and oversee printing.
+            Manage collections, upload papers, assign reviewers, and oversee
+            printing.
           </p>
         </div>
-        <Link
-          href="/dashboard/admin/manage-users"
-          className="mt-4 md:mt-0 inline-block px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 
+        <div className="flex gap-3">
+          <Link
+            href="/dashboard/admin/manage-users"
+            className="inline-block px-5 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 
           hover:from-indigo-500 hover:to-purple-500 transition shadow-md font-medium text-white text-sm"
-        >
-          👥 Manage Users
-        </Link>
+          >
+            👥 Manage Users
+          </Link>
+          <Link
+            href="/dashboard/admin/review-papers"
+            className="inline-block px-5 py-2 rounded-lg bg-gradient-to-r from-green-600 to-teal-500 
+          hover:from-green-500 hover:to-teal-400 transition shadow-md font-medium text-white text-sm"
+          >
+            ✅ Review Papers
+          </Link>
+        </div>
       </div>
 
       {/* ✅ CREATE COLLECTION */}
@@ -196,7 +195,6 @@ export default function AdminPage() {
             ))}
           </select>
 
-          {/* ✅ Google Drive Link Input */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Google Drive Link (Optional)
@@ -210,9 +208,6 @@ export default function AdminPage() {
               }
               className="w-full px-3 py-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500"
             />
-            <p className="text-xs text-gray-400 mt-1">
-              Paste your Google Drive shareable link here, or leave empty.
-            </p>
           </div>
 
           <button
@@ -293,9 +288,23 @@ export default function AdminPage() {
 
               {p.status === "reviewed" && (
                 <div className="mt-2">
-                  <p className="text-green-400">
-                    Reviewer Comments: {p.comments}
-                  </p>
+                  <div className="text-green-400">
+                    <p className="font-semibold">Reviewer Comments:</p>
+                    {p.comments?.length > 0 ? (
+                      <div className="mt-1 space-y-1">
+                        {p.comments.map((c: any, idx: number) => (
+                          <p key={idx} className="text-sm">
+                            <span className="text-green-300">
+                              {c.reviewer}:
+                            </span>{" "}
+                            {c.comment}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm">No comments yet.</p>
+                    )}
+                  </div>
                   <button
                     onClick={() => handleMarkPrinted(p._id)}
                     className="mt-2 w-full py-2 bg-green-600 hover:bg-green-700 rounded-lg"

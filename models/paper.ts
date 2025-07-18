@@ -9,24 +9,25 @@ const paperSchema = new Schema(
       ref: "Collection",
       required: true,
     },
+    driveLink: { type: String, default: "" },
     status: {
       type: String,
       enum: ["draft", "reviewed", "printed"],
       default: "draft",
     },
     reviewer: { type: String, default: "" },
-    comments: { type: String, default: "" },
-    driveLink: { type: String, default: "" }, // ✅ Changed from pdfUrl to driveLink
-    reviewedAt: { type: Date },
-    printedAt: { type: Date },
+    comments: [
+      {
+        reviewer: { type: String, required: true },
+        comment: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+    reviewLink: { type: String, default: "" },
+    reviewCount: { type: Number, default: 0 },
   },
-  { timestamps: true, suppressReservedKeysWarning: true }
+  { timestamps: true }
 );
 
-// Clear the cached model to ensure schema updates are applied
-if (models.Paper) {
-  delete models.Paper;
-}
-
-const Paper = model("Paper", paperSchema);
+const Paper = models.Paper || model("Paper", paperSchema);
 export default Paper;

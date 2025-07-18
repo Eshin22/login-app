@@ -1,0 +1,189 @@
+### Test Reviewer Papers API
+
+# Base URL
+@baseUrl = http://localhost:3000
+@reviewerName = John Doe
+@paperId = 6747b123456789abcdefghij
+
+### 1. GET - Get papers assigned to a reviewer
+GET {{baseUrl}}/api/reviewer/papers?reviewer={{reviewerName}}
+Accept: application/json
+
+###
+
+### 2. PUT - Update paper review with comments only
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "This paper shows excellent research methodology. The conclusions are well-supported by the data presented.",
+  "reviewCount": 1
+}
+
+###
+
+### 3. PUT - Update paper review with review link only
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "reviewLink": "https://drive.google.com/file/d/1234567890abcdefghijk/view",
+  "reviewCount": 1
+}
+
+###
+
+### 4. PUT - Update paper review with both comments and review link
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "Overall good paper with minor grammatical errors. Content is solid.",
+  "reviewLink": "https://drive.google.com/file/d/1234567890abcdefghijk/view",
+  "reviewCount": 2
+}
+
+###
+
+### 5. PUT - Update paper review count only
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "reviewCount": 3
+}
+
+###
+
+### 6. PUT - Test error case - Missing paper ID
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "reviewer": "{{reviewerName}}",
+  "comments": "This should fail because paperId is missing"
+}
+
+###
+
+### 7. PUT - Test error case - Missing reviewer
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "comments": "This should fail because reviewer is missing"
+}
+
+###
+
+### 8. PUT - Test error case - Non-existent paper ID
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "123456789012345678901234",
+  "reviewer": "{{reviewerName}}",
+  "comments": "This should fail because paper doesn't exist"
+}
+
+###
+
+### 9. PUT - Test edge case - Empty comments (should still work)
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "",
+  "reviewLink": "https://drive.google.com/file/d/1234567890abcdefghijk/view",
+  "reviewCount": 1
+}
+
+###
+
+### 10. PUT - Test edge case - Review count exceeding limit (should fail)
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "This should fail if paper already has 3 reviews",
+  "reviewCount": 4
+}
+
+###
+
+### 11. PUT - Test with very long comment
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "This is a very long comment to test the system's ability to handle lengthy feedback. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+  "reviewCount": 1
+}
+
+###
+
+### 12. PUT - Test updating existing reviewer's comment
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "{{reviewerName}}",
+  "comments": "This is an updated comment from the same reviewer - should replace the previous one",
+  "reviewCount": 1
+}
+
+###
+
+### 13. PUT - Test with different reviewer
+PUT {{baseUrl}}/api/reviewer/papers
+Content-Type: application/json
+
+{
+  "paperId": "{{paperId}}",
+  "reviewer": "Jane Smith",
+  "comments": "This is a comment from a different reviewer - should add as new comment",
+  "reviewCount": 2
+}
+
+###
+
+### Instructions for testing:
+# 1. Make sure your Next.js app is running on localhost:3000
+# 2. Replace the @paperId variable with an actual paper ID from your database
+# 3. Replace the @reviewerName with an actual reviewer name from your database
+# 4. Run each test individually to see the responses
+# 5. Check the database to verify the changes are persisted correctly
+
+### Sample successful response:
+# {
+#   "message": "Review updated successfully",
+#   "paper": {
+#     "_id": "...",
+#     "comments": [
+#       {
+#         "reviewer": "John Doe",
+#         "comment": "This paper shows excellent research methodology...",
+#         "createdAt": "2024-01-20T10:30:00Z"
+#       }
+#     ],
+#     "reviewCount": 1,
+#     "reviewLink": "https://drive.google.com/...",
+#     "status": "reviewed"
+#   }
+# }
