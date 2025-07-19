@@ -1,11 +1,14 @@
 "use client";
+
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ Import Next.js router
 import axios from "axios";
 
 export default function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter(); // ✅ Initialize router
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,6 +17,13 @@ export default function Register() {
     try {
       const res = await axios.post("/api/auth/register", form);
       setMessage(res.data.message);
+
+      // ✅ Redirect to login after 1.5s if success
+      if (res.data.message.toLowerCase().includes("success")) {
+        setTimeout(() => {
+          router.push("/login");
+        }, 1500);
+      }
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.data?.message) {
         setMessage(err.response.data.message);

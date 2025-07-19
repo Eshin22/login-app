@@ -1,21 +1,41 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function HomePage() {
+  const [particles, setParticles] = useState<
+    { top: string; left: string; duration: string; delay: string }[]
+  >([]);
+  const [year, setYear] = useState<number>(2025); // default as build time
+
+  useEffect(() => {
+    // ✅ Generate random values only on the client to avoid SSR mismatch
+    const generatedParticles = Array.from({ length: 20 }, () => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      duration: `${4 + Math.random() * 6}s`,
+      delay: `${Math.random() * 5}s`,
+    }));
+    setParticles(generatedParticles);
+
+    // ✅ Ensure consistent year only on client (optional, but safe)
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex flex-col items-center justify-center text-center text-white overflow-hidden">
       {/* ✅ Floating Particles */}
       <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((particle, i) => (
           <div
             key={i}
             className="absolute w-2 h-2 rounded-full bg-gradient-to-r from-indigo-400 to-pink-500 opacity-40 blur-md animate-float"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${4 + Math.random() * 6}s`,
-              animationDelay: `${Math.random() * 5}s`,
+              top: particle.top,
+              left: particle.left,
+              animationDuration: particle.duration,
+              animationDelay: particle.delay,
             }}
           ></div>
         ))}
@@ -27,32 +47,30 @@ export default function HomePage() {
           PaperFlow
         </h1>
         <p className="mt-4 text-gray-300 text-lg md:text-xl">
-          The smart way to manage <span className="text-indigo-400 font-semibold">papers</span>, 
-          assign <span className="text-purple-400 font-semibold">reviewers</span>, 
-          and track <span className="text-pink-400 font-semibold">progress</span>.
+          The smart way to manage{" "}
+          <span className="text-indigo-400 font-semibold">papers</span>, assign{" "}
+          <span className="text-purple-400 font-semibold">reviewers</span>, and
+          track{" "}
+          <span className="text-pink-400 font-semibold">progress</span>.
         </p>
 
         {/* ✅ Buttons */}
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/login"
-            className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 
-            hover:from-indigo-500 hover:to-purple-500 rounded-lg font-semibold 
-            shadow-lg transform hover:scale-110 transition duration-300"
+            className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 rounded-lg font-semibold shadow-lg transform hover:scale-110 transition duration-300"
           >
             🔑 Login
           </Link>
           <Link
             href="/register"
-            className="px-8 py-3 bg-gradient-to-r from-pink-600 to-red-500 
-            hover:from-pink-500 hover:to-red-400 rounded-lg font-semibold 
-            shadow-lg transform hover:scale-110 transition duration-300"
+            className="px-8 py-3 bg-gradient-to-r from-pink-600 to-red-500 hover:from-pink-500 hover:to-red-400 rounded-lg font-semibold shadow-lg transform hover:scale-110 transition duration-300"
           >
             📝 Sign Up
           </Link>
         </div>
 
-        {/* ✅ Bouncing Button (New Feature) */}
+        {/* ✅ Bouncing Button */}
         <div className="mt-10">
           <Link
             href="/register"
@@ -69,7 +87,7 @@ export default function HomePage() {
 
       {/* ✅ Footer */}
       <p className="absolute bottom-5 text-gray-500 text-xs">
-        © {new Date().getFullYear()} PaperFlow. All rights reserved.
+        © {year} PaperFlow. All rights reserved.
       </p>
     </div>
   );

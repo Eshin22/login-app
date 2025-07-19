@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminPanel from "./admin/page";
-import TeacherPanel from "./teacherPanel";
+import TeacherPanel from "./teacher/page";
 import ReviewerPanel from "./reviewerPanel";
 
 export default function Dashboard() {
