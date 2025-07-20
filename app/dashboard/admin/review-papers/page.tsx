@@ -40,7 +40,7 @@ export default function ReviewPapersPage() {
 
       alert("Paper updated successfully!");
       setUpdateData({ paperId: "", adminComment: "", reviewLink: "" });
-      fetchPapers(); // ✅ Refresh updated details
+      fetchPapers();
     } catch (error: any) {
       console.error("Error updating paper:", error);
       alert(error.response?.data?.message || "Failed to update paper");
@@ -49,102 +49,138 @@ export default function ReviewPapersPage() {
     }
   };
 
+  // ✅ Group papers by collection
+  const groupedPapers = papers.reduce((acc: any, paper: any) => {
+    const collectionName = paper.collectionId?.name || "Uncategorized";
+    if (!acc[collectionName]) acc[collectionName] = [];
+    acc[collectionName].push(paper);
+    return acc;
+  }, {});
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
       <h1 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
         Admin Review Papers
       </h1>
-      <div className="space-y-4">
-        {papers.map((p) => (
-          <div
-            key={p._id}
-            className="bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition"
-          >
-            <h2 className="text-lg font-semibold">{p.title}</h2>
-            <p className="text-sm text-gray-400">Subject: {p.subject}</p>
-            <p className="text-sm text-yellow-400">
-              Review Count: {p.reviewCount} / 3
-            </p>
-            {p.driveLink && (
-              <a
-                href={p.driveLink}
-                target="_blank"
-                className="text-blue-400 hover:underline text-sm"
-              >
-                📄 View Original Paper
-              </a>
-            )}
 
-            {p.reviewLink && (
-              <p className="text-green-400 text-sm mt-1">
-                ✅ Final Reviewed Paper:{" "}
-                <a
-                  href={p.reviewLink}
-                  target="_blank"
-                  className="underline hover:text-green-300"
-                >
-                  Open Link
-                </a>
+      {Object.keys(groupedPapers).map((collectionName) => (
+        <div key={collectionName} className="mb-6">
+          {/* ✅ Collection Header */}
+          <h2 className="text-2xl font-semibold text-indigo-300 mb-3">
+            {collectionName}
+          </h2>
+
+          {/* ✅ Papers Under Each Collection */}
+          {groupedPapers[collectionName].map((p: any) => (
+            <div
+              key={p._id}
+              className="bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700 transition mb-4"
+            >
+              <h3 className="text-lg font-semibold">{p.title}</h3>
+              <p className="text-sm text-gray-400">Subject: {p.subject}</p>
+              <p className="text-sm text-yellow-400">
+                Review Count: {p.reviewCount} / 3
               </p>
-            )}
+              {p.driveLink && (
+                <a
+                  href={p.driveLink}
+                  target="_blank"
+                  className="text-blue-400 hover:underline text-sm"
+                >
+                  📄 View Original Paper
+                </a>
+              )}
 
-            {/* ✅ Show Previous Comments */}
-            {p.comments?.length > 0 && (
-              <div className="mt-3 bg-gray-700 p-2 rounded">
-                <p className="text-gray-300 text-sm mb-1">Reviewer Comments:</p>
-                {p.comments.map((c: any, idx: number) => (
-                  <p key={idx} className="text-xs text-gray-400">
-                    <span className="text-indigo-400 font-semibold">
-                      {c.reviewer}:
-                    </span>{" "}
-                    {c.comment}
+              {p.reviewLink && (
+                <p className="text-green-400 text-sm mt-1">
+                  ✅ Final Reviewed Paper:{" "}
+                  <a
+                    href={p.reviewLink}
+                    target="_blank"
+                    className="underline hover:text-green-300"
+                  >
+                    Open Link
+                  </a>
+                </p>
+              )}
+
+              {/* ✅ Reviewer Comments */}
+              {p.comments?.length > 0 && (
+                <div className="mt-3 bg-gray-700 p-2 rounded">
+                  <p className="text-gray-300 text-sm mb-1">
+                    Reviewer Comments:
                   </p>
-                ))}
-              </div>
-            )}
+                  {p.comments.map((c: any, idx: number) => (
+                    <p key={idx} className="text-xs text-gray-400">
+                      <span className="text-indigo-400">{c.reviewer}:</span>{" "}
+                      {c.comment}
+                    </p>
+                  ))}
+                </div>
+              )}
 
-            {/* ✅ Update Paper Section */}
-            <div className="mt-4 space-y-2">
-              <textarea
-                placeholder="Admin final comment (optional)"
-                value={
-                  updateData.paperId === p._id ? updateData.adminComment : ""
-                }
-                onChange={(e) =>
-                  setUpdateData({
-                    ...updateData,
-                    paperId: p._id,
-                    adminComment: e.target.value,
-                  })
-                }
-                className="w-full p-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500"
-              />
-              <input
-                type="url"
-                placeholder="Final reviewed paper Google Drive link"
-                value={
-                  updateData.paperId === p._id ? updateData.reviewLink : ""
-                }
-                onChange={(e) =>
-                  setUpdateData({
-                    ...updateData,
-                    paperId: p._id,
-                    reviewLink: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 bg-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                onClick={handleUpdatePaper}
-                disabled={updating}
-                className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
-              >
-                {updating ? "Saving..." : "Save Final Review"}
-              </button>
+              {/* ✅ Admin Comments (Multiple Possible) */}
+              {p.adminComments?.length > 0 && (
+                <div className="mt-3 bg-gray-700 p-2 rounded">
+                  <p className="text-gray-300 text-sm mb-1">Admin Comments:</p>
+                  {p.adminComments.map((ac: any, idx: number) => (
+                    <p key={idx} className="text-xs text-gray-400">
+                      <span className="text-yellow-400">
+                        {ac.adminName}:
+                      </span>{" "}
+                      {ac.comment}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* ✅ Update Paper Section */}
+              <div className="mt-4 space-y-2">
+                <textarea
+                  placeholder="Admin final comment (optional)"
+                  value={
+                    updateData.paperId === p._id
+                      ? updateData.adminComment
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setUpdateData({
+                      ...updateData,
+                      paperId: p._id,
+                      adminComment: e.target.value,
+                    })
+                  }
+                  className="w-full p-2 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-indigo-500"
+                />
+                <input
+                  type="url"
+                  placeholder="Final reviewed paper Google Drive link"
+                  value={
+                    updateData.paperId === p._id
+                      ? updateData.reviewLink
+                      : ""
+                  }
+                  onChange={(e) =>
+                    setUpdateData({
+                      ...updateData,
+                      paperId: p._id,
+                      reviewLink: e.target.value,
+                    })
+                  }
+                  className="w-full px-3 py-2 bg-gray-700 rounded-lg text-white focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  onClick={handleUpdatePaper}
+                  disabled={updating}
+                  className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg"
+                >
+                  {updating ? "Saving..." : "Save Final Review"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

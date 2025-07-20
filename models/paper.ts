@@ -25,6 +25,15 @@ const paperSchema = new Schema(
     ],
     reviewLink: { type: String, default: "" },
     reviewCount: { type: Number, default: 0 },
+
+    // ✅ Add this field to store teacher comments
+    teacherComments: [
+      {
+        teacher: { type: String, default: "Teacher" }, // optional teacher name
+        comment: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );
